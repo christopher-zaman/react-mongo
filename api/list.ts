@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import clientPromise from "./_db.ts";
+import clientPromise from "./_db";
 console.log("MONGODB_URI present:", !!process.env.MONGODB_URI);
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
