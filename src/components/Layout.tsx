@@ -4,11 +4,14 @@ import Footer from "./Footer";
 
 export default function Layout({ children }: PropsWithChildren) {
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100">
+    <div className="min-h-screen bg-gray-950 text-gray-100 overflow-x-hidden">
       {/* Background glow */}
-            <div className="pointer-events-none fixed inset-0 -z-10">
-            <div className="absolute left-1/2 top-[-120px] h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-indigo-500/20 blur-3xl" />
-            <div className="absolute right-[-140px] top-[260px] h-[520px] w-[520px] rounded-full bg-fuchsia-500/10 blur-3xl" />
+      <div className="pointer-events-none fixed inset-0 -z-10">
+      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+      <div className="absolute left-1/2 top-[-120px] h-[340px] w-[340px] -translate-x-1/2 rounded-full bg-indigo-500/20 blur-3xl sm:h-[420px] sm:w-[420px]" />
+      <div className="absolute right-[-120px] top-[260px] h-[420px] w-[420px] rounded-full bg-fuchsia-500/10 blur-3xl sm:right-[-140px] sm:h-[520px] sm:w-[520px]" />
+    </div>
+
             </div>
 
 

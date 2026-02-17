@@ -28,6 +28,26 @@ function toDateInputValue(d: Date) {
   return `${yyyy}-${mm}-${dd}`;
 }
 
+function Card({
+  title,
+  badge,
+  children,
+}: {
+  title: string;
+  badge?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="min-w-0 space-y-4 rounded-2xl bg-gray-900 p-6 shadow ring-1 ring-white/5">
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-lg font-semibold">{title}</h2>
+        {badge ? <span className="text-xs text-gray-400">{badge}</span> : null}
+      </div>
+      {children}
+    </div>
+  );
+}
+
 export default function DemoPage() {
   // Form fields
   const [name, setName] = useState("");
@@ -155,160 +175,161 @@ export default function DemoPage() {
 
   return (
     <Layout>
-      <section className="py-14">
+      {/* overflow guard (in case Layout doesn't have it yet) */}
+      <section className="py-10 overflow-x-hidden">
         <h1 className="text-3xl font-semibold">Live demo</h1>
         <p className="mt-2 max-w-2xl text-gray-300">
           Admin-style intake form → inserts into MongoDB Atlas → list supports basic filters.
         </p>
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-2">
+        <div className="mt-8 grid min-w-0 gap-6 lg:grid-cols-2">
           {/* FORM */}
-          <form onSubmit={onSubmit} className="space-y-4 rounded-2xl bg-gray-900 p-6 shadow">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">New submission</h2>
-              <span className="text-xs text-gray-400">POST /api/submit</span>
-            </div>
+          <Card title="New submission" badge="POST /api/submit">
+            <form onSubmit={onSubmit} className="space-y-4 min-w-0">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="min-w-0">
+                  <label className="block text-sm text-gray-300">Name *</label>
+                  <input
+                    className="mt-1 w-full rounded-lg bg-gray-800 px-3 py-2 outline-none ring-1 ring-gray-700 focus:ring-2 focus:ring-gray-500"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Full Name"
+                    required
+                  />
+                </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
+                <div className="min-w-0">
+                  <label className="block text-sm text-gray-300">Email</label>
+                  <input
+                    type="email"
+                    className="mt-1 w-full rounded-lg bg-gray-800 px-3 py-2 outline-none ring-1 ring-gray-700 focus:ring-2 focus:ring-gray-500"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="email@example.com"
+                  />
+                </div>
+
+                <div className="min-w-0">
+                  <label className="block text-sm text-gray-300">Phone</label>
+                  <input
+                    type="tel"
+                    className="mt-1 w-full rounded-lg bg-gray-800 px-3 py-2 outline-none ring-1 ring-gray-700 focus:ring-2 focus:ring-gray-500"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="(555) 555-5555"
+                  />
+                </div>
+
+                <div className="min-w-0">
+                  <label className="block text-sm text-gray-300">Age</label>
+                  <input
+                    type="number"
+                    min={0}
+                    max={120}
+                    className="mt-1 w-full rounded-lg bg-gray-800 px-3 py-2 outline-none ring-1 ring-gray-700 focus:ring-2 focus:ring-gray-500"
+                    value={age}
+                    onChange={(e) => setAge(e.target.value)}
+                  />
+                </div>
+
+                <div className="min-w-0">
+                  <label className="block text-sm text-gray-300">DOB</label>
+                  <input
+                    type="date"
+                    className="mt-1 w-full rounded-lg bg-gray-800 px-3 py-2 outline-none ring-1 ring-gray-700 focus:ring-2 focus:ring-gray-500"
+                    value={dob}
+                    onChange={(e) => setDob(e.target.value)}
+                  />
+                </div>
+
+                <div className="min-w-0">
+                  <label className="block text-sm text-gray-300">State</label>
+                  <select
+                    className="mt-1 w-full rounded-lg bg-gray-800 px-3 py-2 outline-none ring-1 ring-gray-700 focus:ring-2 focus:ring-gray-500"
+                    value={stateUS}
+                    onChange={(e) => setStateUS(e.target.value)}
+                  >
+                    {STATE_OPTIONS.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
               <div>
-                <label className="block text-sm text-gray-300">Name *</label>
-                <input
-                  className="mt-1 w-full rounded-lg bg-gray-800 px-3 py-2 outline-none ring-1 ring-gray-700 focus:ring-2 focus:ring-gray-500"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Full Name"
+                <label className="block text-sm text-gray-300">Preferred contact method</label>
+                <div className="mt-2 flex flex-wrap gap-3">
+                  {(["email", "phone", "text"] as const).map((m) => (
+                    <label
+                      key={m}
+                      className="flex cursor-pointer items-center gap-2 rounded-lg bg-gray-800 px-3 py-2 ring-1 ring-gray-700"
+                    >
+                      <input
+                        type="radio"
+                        name="contactMethod"
+                        value={m}
+                        checked={contactMethod === m}
+                        onChange={() => setContactMethod(m)}
+                      />
+                      <span className="text-sm capitalize">{m}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm text-gray-300">Topics</label>
+                <div className="mt-2 flex flex-wrap gap-3">
+                  {TOPIC_OPTIONS.map((t) => (
+                    <label
+                      key={t}
+                      className="flex cursor-pointer items-center gap-2 rounded-lg bg-gray-800 px-3 py-2 ring-1 ring-gray-700"
+                    >
+                      <input type="checkbox" checked={topics.includes(t)} onChange={() => toggleTopic(t)} />
+                      <span className="text-sm">{t}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="min-w-0">
+                <label className="block text-sm text-gray-300">Message *</label>
+                <textarea
+                  className="mt-1 min-h-[96px] w-full rounded-lg bg-gray-800 px-3 py-2 outline-none ring-1 ring-gray-700 focus:ring-2 focus:ring-gray-500"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="Notes / request..."
                   required
                 />
               </div>
 
-              <div>
-                <label className="block text-sm text-gray-300">Email</label>
+              <label className="flex items-center gap-2 text-sm text-gray-300">
                 <input
-                  type="email"
-                  className="mt-1 w-full rounded-lg bg-gray-800 px-3 py-2 outline-none ring-1 ring-gray-700 focus:ring-2 focus:ring-gray-500"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="email@example.com"
+                  type="checkbox"
+                  checked={agree}
+                  onChange={(e) => setAgree(e.target.checked)}
+                  required
                 />
-              </div>
+                I confirm the info is accurate (required)
+              </label>
 
-              <div>
-                <label className="block text-sm text-gray-300">Phone</label>
-                <input
-                  type="tel"
-                  className="mt-1 w-full rounded-lg bg-gray-800 px-3 py-2 outline-none ring-1 ring-gray-700 focus:ring-2 focus:ring-gray-500"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="(555) 555-5555"
-                />
-              </div>
+              <button
+                type="submit"
+                className="w-full sm:w-auto rounded-lg bg-white px-4 py-2 font-medium text-gray-900 hover:opacity-90"
+              >
+                Submit
+              </button>
 
-              <div>
-                <label className="block text-sm text-gray-300">Age</label>
-                <input
-                  type="number"
-                  min={0}
-                  max={120}
-                  className="mt-1 w-full rounded-lg bg-gray-800 px-3 py-2 outline-none ring-1 ring-gray-700 focus:ring-2 focus:ring-gray-500"
-                  value={age}
-                  onChange={(e) => setAge(e.target.value)}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm text-gray-300">DOB</label>
-                <input
-                  type="date"
-                  className="mt-1 w-full rounded-lg bg-gray-800 px-3 py-2 outline-none ring-1 ring-gray-700 focus:ring-2 focus:ring-gray-500"
-                  value={dob}
-                  onChange={(e) => setDob(e.target.value)}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm text-gray-300">State</label>
-                <select
-                  className="mt-1 w-full rounded-lg bg-gray-800 px-3 py-2 outline-none ring-1 ring-gray-700 focus:ring-2 focus:ring-gray-500"
-                  value={stateUS}
-                  onChange={(e) => setStateUS(e.target.value)}
-                >
-                  {STATE_OPTIONS.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm text-gray-300">Preferred contact method</label>
-              <div className="mt-2 flex flex-wrap gap-3">
-                {(["email", "phone", "text"] as const).map((m) => (
-                  <label
-                    key={m}
-                    className="flex cursor-pointer items-center gap-2 rounded-lg bg-gray-800 px-3 py-2 ring-1 ring-gray-700"
-                  >
-                    <input
-                      type="radio"
-                      name="contactMethod"
-                      value={m}
-                      checked={contactMethod === m}
-                      onChange={() => setContactMethod(m)}
-                    />
-                    <span className="text-sm capitalize">{m}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm text-gray-300">Topics</label>
-              <div className="mt-2 flex flex-wrap gap-3">
-                {TOPIC_OPTIONS.map((t) => (
-                  <label
-                    key={t}
-                    className="flex cursor-pointer items-center gap-2 rounded-lg bg-gray-800 px-3 py-2 ring-1 ring-gray-700"
-                  >
-                    <input type="checkbox" checked={topics.includes(t)} onChange={() => toggleTopic(t)} />
-                    <span className="text-sm">{t}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm text-gray-300">Message *</label>
-              <textarea
-                className="mt-1 min-h-[96px] w-full rounded-lg bg-gray-800 px-3 py-2 outline-none ring-1 ring-gray-700 focus:ring-2 focus:ring-gray-500"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Notes / request..."
-                required
-              />
-            </div>
-
-            <label className="flex items-center gap-2 text-sm text-gray-300">
-              <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} required />
-              I confirm the info is accurate (required)
-            </label>
-
-            <button type="submit" className="rounded-lg bg-white px-4 py-2 font-medium text-gray-900 hover:opacity-90">
-              Submit
-            </button>
-
-            {status && <p className="text-sm text-gray-300">{status}</p>}
-          </form>
+              {status ? <p className="text-sm text-gray-300 break-words">{status}</p> : null}
+            </form>
+          </Card>
 
           {/* LIST */}
-          <div className="space-y-4 rounded-2xl bg-gray-900 p-6 shadow">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Extract submissions</h2>
-              <span className="text-xs text-gray-400">GET /api/list</span>
-            </div>
-
+          <Card title="Extract submissions" badge="GET /api/list">
             <div className="grid gap-4 sm:grid-cols-2">
-              <div>
+              <div className="min-w-0">
                 <label className="block text-sm text-gray-300">Filter by email</label>
                 <input
                   className="mt-1 w-full rounded-lg bg-gray-800 px-3 py-2 outline-none ring-1 ring-gray-700 focus:ring-2 focus:ring-gray-500"
@@ -318,7 +339,7 @@ export default function DemoPage() {
                 />
               </div>
 
-              <div>
+              <div className="min-w-0">
                 <label className="block text-sm text-gray-300">Filter by topic</label>
                 <select
                   className="mt-1 w-full rounded-lg bg-gray-800 px-3 py-2 outline-none ring-1 ring-gray-700 focus:ring-2 focus:ring-gray-500"
@@ -334,7 +355,7 @@ export default function DemoPage() {
                 </select>
               </div>
 
-              <div>
+              <div className="min-w-0">
                 <label className="block text-sm text-gray-300">From</label>
                 <input
                   type="date"
@@ -344,7 +365,7 @@ export default function DemoPage() {
                 />
               </div>
 
-              <div>
+              <div className="min-w-0">
                 <label className="block text-sm text-gray-300">To</label>
                 <input
                   type="date"
@@ -355,59 +376,67 @@ export default function DemoPage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <button
                 onClick={refreshList}
-                className="rounded-lg bg-gray-800 px-3 py-2 text-sm ring-1 ring-gray-700 hover:bg-gray-700"
+                className="w-full sm:w-auto rounded-lg bg-gray-800 px-3 py-2 text-sm ring-1 ring-gray-700 hover:bg-gray-700"
               >
                 {loadingList ? "Loading..." : "Refresh"}
               </button>
-              <div className="break-all text-xs text-gray-400">
-                Query: <span className="text-gray-300">?{queryString}</span>
+
+              <div className="text-xs text-gray-400 max-w-full">
+                <span className="mr-2">Query:</span>
+                <span className="text-gray-300 break-words">?{queryString}</span>
               </div>
             </div>
 
             <div className="mt-2 space-y-3">
               {items.map((it) => (
-                <div key={it._id} className="rounded-xl bg-gray-950/40 p-4 ring-1 ring-gray-800">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <div className="font-medium">{it.name}</div>
-                      <div className="mt-1 text-xs text-gray-400">
+                <div key={it._id} className="rounded-xl bg-gray-950/40 p-4 ring-1 ring-gray-800 min-w-0">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="min-w-0">
+                      <div className="font-medium break-words">{it.name}</div>
+                      <div className="mt-1 text-xs text-gray-400 break-words">
                         {it.email ? <span className="mr-2">{it.email}</span> : null}
                         {it.phone ? <span className="mr-2">{it.phone}</span> : null}
                         {it.state ? <span className="mr-2">{it.state}</span> : null}
                         {it.contactMethod ? <span className="mr-2">pref: {it.contactMethod}</span> : null}
                       </div>
                     </div>
-                    <div className="text-right text-xs text-gray-500">
+
+                    <div className="text-left sm:text-right text-xs text-gray-500 min-w-0">
                       <div>{it.createdAt ? new Date(it.createdAt).toLocaleString() : null}</div>
-                      <div className="mt-1">{it._id}</div>
+                      <div className="mt-1 break-all">{it._id}</div>
                     </div>
                   </div>
 
                   {it.topics?.length ? (
                     <div className="mt-2 flex flex-wrap gap-2">
                       {it.topics.map((t) => (
-                        <span key={t} className="rounded-full bg-gray-800 px-2 py-0.5 text-xs text-gray-300 ring-1 ring-gray-700">
+                        <span
+                          key={t}
+                          className="rounded-full bg-gray-800 px-2 py-0.5 text-xs text-gray-300 ring-1 ring-gray-700"
+                        >
                           {t}
                         </span>
                       ))}
                     </div>
                   ) : null}
 
-                  <div className="mt-2 whitespace-pre-wrap text-gray-200">{it.message}</div>
+                  <div className="mt-2 whitespace-pre-wrap text-gray-200 break-words">{it.message}</div>
                 </div>
               ))}
 
-              {items.length === 0 && <div className="text-gray-400">No submissions match your filters.</div>}
+              {items.length === 0 ? (
+                <div className="text-gray-400">No submissions match your filters.</div>
+              ) : null}
             </div>
-          </div>
+          </Card>
         </div>
 
         <div className="mt-10 rounded-2xl border border-white/10 bg-white/5 p-5 text-xs text-gray-400">
-          Tip: for production, prefer putting the DB name in your URI (…mongodb.net/<span className="text-gray-200">myapp</span>) and
-          remove MONGODB_DB entirely.
+          Tip: for production, prefer putting the DB name in your URI (…mongodb.net/
+          <span className="text-gray-200">myapp</span>) and remove MONGODB_DB entirely.
         </div>
       </section>
     </Layout>
